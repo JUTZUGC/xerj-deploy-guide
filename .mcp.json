@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "xerj-guide": {
+      "command": "node",
+      "args": [
+        "mcp-server.mjs"
+      ]
+    }
+  }
+}

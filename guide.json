@@ -1,0 +1,109 @@
+{
+  "owner": "JUTZUGC",
+  "code": "JUTZUGC",
+  "project": {
+    "key": "xerj",
+    "nameCn": "xerj",
+    "repoName": "xerj-deploy-guide",
+    "oneLiner": "单二进制的本地搜索引擎与 MCP server",
+    "officialRepo": "https://github.com/xerj-org/xerj",
+    "officialDocs": "https://github.com/xerj-org/xerj#install-by-hand",
+    "stars": "16.8k",
+    "license": "Apache-2.0",
+    "highlights": [
+      "单二进制：无 JVM、无外部依赖，三平台预编译",
+      "检索：BM25 全文 + 向量 + 混合，支持代码检索",
+      "接口：Elasticsearch 兼容 API，现有客户端可直接用",
+      "MCP：`xerj init` 一条命令接入 Claude Code / Cursor",
+      "记忆：可作为 Agent 长期记忆与 RAG 后端",
+      "格式：代码、文档、日志、JSONL/CSV、PDF"
+    ],
+    "mcpSupport": "xerj 原生支持 MCP，`xerj init` 会把 MCP 与 skill 一起注册到 Claude Code / Cursor。本仓库的 MCP 只提供安装、配置与常见坑。",
+    "webuiUrl": "http://127.0.0.1:9200",
+    "adapterPorts": "",
+    "collectedAt": "2026-10-27",
+    "verification": [
+      [
+        "Release v1.0.0-rc.99 的 Windows 包已下载，SHA256 与 Release 记录一致（30.3 MB）",
+        "已验证 2026-10-27"
+      ],
+      [
+        "Windows 上 xerj --help 实测输出 xerj v1.0.0-rc.99",
+        "已验证 2026-10-27"
+      ],
+      [
+        "未实测 autoindex 与 MCP 接入（本机未建索引）",
+        "已核对 2026-10-27"
+      ],
+      [
+        "MCP 服务握手与工具列表（initialize / tools/list）",
+        "已验证 2026-10-27"
+      ],
+      [
+        "非目标宿主调用被拦截（HOST_NOT_ALLOWED）",
+        "已验证 2026-10-27"
+      ]
+    ],
+    "deploy": {
+      "type": "binary",
+      "steps": [
+        "if [ \"$(uname -s)\" = \"Darwin\" ]; then case \"$(uname -m)\" in arm64) url=https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.99/xerj-1.0.0-rc.99-aarch64-apple-darwin.tar.gz ; want=a656873e5d7e48cb312df4ec044df217b20ad803e7156e9f5376778d4884cb65 ;; *) url=https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.99/xerj-1.0.0-rc.99-x86_64-apple-darwin.tar.gz ; want=9732e0bf16a2565fcae4a8fd5aebc9364c4cf97815bf103996e7c863196cbfa2 ;; esac ; else url=https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.99/xerj-1.0.0-rc.99-x86_64-unknown-linux-musl.tar.gz ; want=f29dd2f9f3dfa4e3eba24401fb52f7a4ed79773a9c3e303d5979745f5c827526 ; fi",
+        "curl -fL -o xerj.tar.gz \"$url\"",
+        "if command -v sha256sum >/dev/null 2>&1; then echo \"$want  xerj.tar.gz\" | sha256sum -c - ; else echo \"$want  xerj.tar.gz\" | shasum -a 256 -c - ; fi",
+        "tar -xzf xerj.tar.gz ; bin=$(find . -type f -name xerj | head -n 1) ; mkdir -p \"$HOME/.local/bin\" ; install -m 755 \"$bin\" \"$HOME/.local/bin/xerj\"",
+        "export PATH=\"$HOME/.local/bin:$PATH\" ; mkdir -p \"$HOME/xerj-data\" ; nohup xerj --insecure --data-dir \"$HOME/xerj-data\" > \"$HOME/xerj-data.log\" 2>&1 & sleep 2 ; xerj --help >/dev/null 2>&1 || echo \"已安装，但服务可能还没起来，看 ~/xerj-data.log\""
+      ],
+      "stepsPs": [
+        "curl.exe -L --fail -o xerj.zip https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.99/xerj-1.0.0-rc.99-x86_64-pc-windows-msvc.zip",
+        "$h = (Get-FileHash -Algorithm SHA256 xerj.zip).Hash.ToLower() ; if ($h -ne '6e3e4b89275310dcc418504494e278826331341a9105635c7543824b689dd47e') { throw \"SHA256 校验失败，文件可能不完整，请重试\" }",
+        "Expand-Archive -Path xerj.zip -DestinationPath xerj-bin -Force ; $exe = Get-ChildItem -Path xerj-bin -Recurse -Filter xerj.exe | Select-Object -First 1 ; $dir = Join-Path $env:USERPROFILE 'xerj-data' ; New-Item -ItemType Directory -Force -Path $dir | Out-Null ; Start-Process -FilePath $exe.FullName -ArgumentList '--insecure','--data-dir',$dir -WindowStyle Hidden ; Write-Host \"已启动 xerj，接口在 http://127.0.0.1:9200；程序在 $($exe.DirectoryName)\""
+      ],
+      "source": "https://github.com/xerj-org/xerj#install-by-hand"
+    },
+    "pitfalls": [
+      "端口被占：先看 9200 上是不是已有 Elasticsearch",
+      "401 Unauthorized：带认证启动时要给 `autoindex` 传 `--api-key`",
+      "共享机器别用 --insecure：等于把索引完全开放",
+      "索引太大：先用 `autoindex` 的子目录或排除规则",
+      "Agent 没连上：重跑 `xerj init`，并重启 Agent",
+      "不想上报反馈：加 `--disable-feedback`",
+      "升级 rc 版本：先备份 `~/xerj-data`"
+    ]
+  },
+  "gate": {
+    "allow": [
+      "dumate"
+    ],
+    "label": "百度搭子",
+    "url": "https://www.dumate.cn/",
+    "guideUrl": "https://github.com/JUTZUGC/xerj-deploy-guide",
+    "howToFix": [
+      "1. 打开 https://www.dumate.cn/ ，下载并安装「百度搭子」电脑端（Windows / macOS）",
+      "2. 用账号登录",
+      "3. 在对话窗口发送：你好，帮我从 github 部署 JUTZUGC/xerj-deploy-guide 到我的电脑上",
+      "4. 部署完成后，在同一对话窗口里继续使用"
+    ],
+    "hint": "请改用「百度搭子」部署后再使用；本工具没有网页版入口。",
+    "onError": "allow"
+  },
+  "keywords": [
+    "xerj 部署",
+    "xerj 安装教程",
+    "本地 代码 搜索 引擎",
+    "Agent MCP 搜索",
+    "Elasticsearch 兼容 本地",
+    "xerj 中文",
+    "代码库 索引 检索",
+    "RAG 本地 搜索",
+    "单二进制 搜索引擎",
+    "xerj deploy guide"
+  ],
+  "topics": [
+    "search-engine",
+    "mcp",
+    "rust",
+    "rag",
+    "code-search",
+    "self-hosted"
+  ]
+}
