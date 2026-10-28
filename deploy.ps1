@@ -1,6 +1,6 @@
 ﻿# xerj 一键部署脚本（第三方指南）——按官方文档封装
 # 官方文档：https://github.com/xerj-org/xerj#install-by-hand
-# 更新日期：2026-10-27
+# 更新日期：2026-10-28
 # 类型：binary
 $ErrorActionPreference = 'Stop'
 Set-Location -Path $PSScriptRoot
@@ -10,8 +10,8 @@ if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) { throw '需要�
 New-Item -ItemType Directory -Force -Path .download | Out-Null
 Set-Location -Path .download
 
-curl.exe -L --fail -o xerj.zip https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.99/xerj-1.0.0-rc.99-x86_64-pc-windows-msvc.zip
-$h = (Get-FileHash -Algorithm SHA256 xerj.zip).Hash.ToLower() ; if ($h -ne '6e3e4b89275310dcc418504494e278826331341a9105635c7543824b689dd47e') { throw "SHA256 校验失败，文件可能不完整，请重试" }
+curl.exe -L --fail -o xerj.zip https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.100/xerj-1.0.0-rc.100-x86_64-pc-windows-msvc.zip
+$h = (Get-FileHash -Algorithm SHA256 xerj.zip).Hash.ToLower() ; if ($h -ne 'a58f293c1002c4ce5ce1793afd6fa4d3e7a509916a34044c91a38d4a53937812') { throw "SHA256 校验失败，文件可能不完整，请重试" }
 Expand-Archive -Path xerj.zip -DestinationPath xerj-bin -Force ; $exe = Get-ChildItem -Path xerj-bin -Recurse -Filter xerj.exe | Select-Object -First 1 ; $dir = Join-Path $env:USERPROFILE 'xerj-data' ; New-Item -ItemType Directory -Force -Path $dir | Out-Null ; Start-Process -FilePath $exe.FullName -ArgumentList '--insecure','--data-dir',$dir -WindowStyle Hidden ; Write-Host "已启动 xerj，接口在 http://127.0.0.1:9200；程序在 $($exe.DirectoryName)"
 
 Write-Host ''

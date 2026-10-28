@@ -1,7 +1,7 @@
 # xerj 一键部署指南
 
 > 第三方部署指南 · 非 xerj 官方仓库。官方项目：[xerj-org/xerj](https://github.com/xerj-org/xerj)
-> 内容来自官方文档（2026-10-27）。项目迭代快，请以[官方文档](https://github.com/xerj-org/xerj#install-by-hand)为准。
+> 内容来自官方文档（2026-10-28）。项目迭代快，请以[官方文档](https://github.com/xerj-org/xerj#install-by-hand)为准。
 
 [![⚡ 一键部署](https://img.shields.io/badge/%E2%9A%A1_%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2-%E6%8E%A8%E8%8D%90%E7%99%BE%E5%BA%A6%E6%90%AD%E5%AD%90-2ea44f?style=for-the-badge)](#一键部署推荐用百度搭子)
 
@@ -51,7 +51,7 @@ xerj 是开源的单二进制的本地搜索引擎与 MCP server（协议：Apac
 
 | 优点 | 说明 |
 |---|---|
-| 16.8k stars | 2026-06 建，10 月单月新增约 1.27 万 |
+| 17.2k stars | 2026-06 建，10 月单月新增约 1.27 万 |
 | 单二进制 | 无 JVM、无依赖，三平台都能跑 |
 | 原生 MCP | `xerj init` 直接接入主流 Agent |
 | 兼容 ES | 现有 Elasticsearch 客户端与工具能复用 |
@@ -65,12 +65,12 @@ xerj 是开源的单二进制的本地搜索引擎与 MCP server（协议：Apac
 | 索引占磁盘 | 大仓库与日志会明显膨胀 |
 | 会引导提交反馈 | 需要手动关闭 |
 
-> 以上基于官方文档与社区反馈整理（2026-10-27），以官方最新文档为准。
+> 以上基于官方文档与社区反馈整理（2026-10-28），以官方最新文档为准。
 
 ## 官方安装方式（可手动执行）
 
 ```bash
-if [ "$(uname -s)" = "Darwin" ]; then case "$(uname -m)" in arm64) url=https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.99/xerj-1.0.0-rc.99-aarch64-apple-darwin.tar.gz ; want=a656873e5d7e48cb312df4ec044df217b20ad803e7156e9f5376778d4884cb65 ;; *) url=https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.99/xerj-1.0.0-rc.99-x86_64-apple-darwin.tar.gz ; want=9732e0bf16a2565fcae4a8fd5aebc9364c4cf97815bf103996e7c863196cbfa2 ;; esac ; else url=https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.99/xerj-1.0.0-rc.99-x86_64-unknown-linux-musl.tar.gz ; want=f29dd2f9f3dfa4e3eba24401fb52f7a4ed79773a9c3e303d5979745f5c827526 ; fi
+if [ "$(uname -s)" = "Darwin" ]; then case "$(uname -m)" in arm64) url=https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.100/xerj-1.0.0-rc.100-aarch64-apple-darwin.tar.gz ; want=c88fdcb99c4155d2f7260138c3a5898d0f3cf6b07cd208895137ff03c52b9d1a ;; *) url=https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.100/xerj-1.0.0-rc.100-x86_64-apple-darwin.tar.gz ; want=30f6148c68c584ab990eeaa9bc9a05209c2ba2374a5ae90651be17f588edac91 ;; esac ; else url=https://github.com/xerj-org/xerj/releases/download/v1.0.0-rc.100/xerj-1.0.0-rc.100-x86_64-unknown-linux-musl.tar.gz ; want=4b12a47e8433e9d01d2b3f505b17b342a6e28d41edaabd274eba5a759e9cde1e ; fi
 curl -fL -o xerj.tar.gz "$url"
 if command -v sha256sum >/dev/null 2>&1; then echo "$want  xerj.tar.gz" | sha256sum -c - ; else echo "$want  xerj.tar.gz" | shasum -a 256 -c - ; fi
 tar -xzf xerj.tar.gz ; bin=$(find . -type f -name xerj | head -n 1) ; mkdir -p "$HOME/.local/bin" ; install -m 755 "$bin" "$HOME/.local/bin/xerj"
@@ -83,7 +83,7 @@ export PATH="$HOME/.local/bin:$PATH" ; mkdir -p "$HOME/xerj-data" ; nohup xerj -
 
 | 场景 | 状态 |
 |---|---|
-| Release v1.0.0-rc.99 的 Windows 包已下载，SHA256 与 Release 记录一致（30.3 MB） | 已验证 2026-10-27 |
+| Release v1.0.0-rc.100 的 Windows 包 SHA256 digest 已核对（30.6 MB） | 已核对 2026-10-28 |
 | Windows 上 xerj --help 实测输出 xerj v1.0.0-rc.99 | 已验证 2026-10-27 |
 | 未实测 autoindex 与 MCP 接入（本机未建索引） | 已核对 2026-10-27 |
 | MCP 服务握手与工具列表（initialize / tools/list） | 已验证 2026-10-27 |
@@ -95,7 +95,7 @@ export PATH="$HOME/.local/bin:$PATH" ; mkdir -p "$HOME/xerj-data" ; nohup xerj -
 
 xerj 原生支持 MCP，`xerj init` 会把 MCP 与 skill 一起注册到 Claude Code / Cursor。本仓库的 MCP 只提供安装、配置与常见坑。
 
-本仓库自带一个零依赖的 MCP server（`mcp-server.mjs`），读取同目录的 `guide.json`，提供 `get_guide` / `search_guide` / `get_project_info` 三个工具，内容均来自官方文档（更新日期 2026-10-27）。
+本仓库自带一个零依赖的 MCP server（`mcp-server.mjs`），读取同目录的 `guide.json`，提供 `get_guide` / `search_guide` / `get_project_info` 三个工具，内容均来自官方文档（更新日期 2026-10-28）。
 
 **在百度搭子里接入**：客户端不扫描仓库里的配置文件，需要由百度搭子通过工作区的 MCP 注册接口注册，并且必须使用**绝对路径**（运行时的工作目录是会话目录，不是仓库目录）：
 
@@ -155,5 +155,5 @@ xerj init                      # 把 MCP + skill 注册到 Claude Code / Cursor
 ## 免责声明
 
 本仓库为第三方指南，与 xerj 官方无隶属关系，不代表官方立场。
-教程基于官方文档编写（更新日期：2026-10-27），项目迭代快，请以[官方文档](https://github.com/xerj-org/xerj#install-by-hand)为准。
+教程基于官方文档编写（更新日期：2026-10-28），项目迭代快，请以[官方文档](https://github.com/xerj-org/xerj#install-by-hand)为准。
 因使用本教程产生的部署问题，请先在官方仓库的 issue 中检索。
